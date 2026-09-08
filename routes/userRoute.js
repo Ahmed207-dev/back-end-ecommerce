@@ -1,34 +1,47 @@
-const express = require('express');
+const express = require("express");
+
+const { auth, allowedTo } = require("../controllers/authController");
 const {
-  getUser,
-  createUser,
+  getLoggedUserData,
+  updateLoggedUserPassword,
+  updateLoggedUserData,
+  deleteLoggedUserData,
   getUsers,
+  createUser,
+  getUser,
   updateUser,
-  deleteUser,
   updateUserPassword,
-} = require('../controllers/userController');
+  deleteUser,
+} = require("../controllers/userController");
+
+// استدعِ الـ Validators اللي موجودة فعلياً في مشروعك بس
 const {
+  getUserValidator,
   createUserValidator,
   updateUserValidator,
   deleteUserValidator,
-  getUserValidator,
-  changeUserPasswordValidator,
-} = require('../utils/validators/userValidator');
-const { auth } = require('../controllers/authController');
+} = require("../utils/validators/userValidator");
 
 const router = express.Router();
 
-router.put(
-  '/change-password/:id',
-  changeUserPasswordValidator,
-  updateUserPassword
-);
+// 1. حماية المسارات (login required)
+router.use(auth);
 
-router.route('/').get(getUsers).post(auth, createUserValidator, createUser);
+// 2. مسارات المستخدم المسجل (Logged User)
+router.get("/getMe", getLoggedUserData, getUser);
+router.put("/changeMyPassword", updateLoggedUserPassword);
+router.put("/updateMe", updateLoggedUserData);
+router.delete("/deleteMe", deleteLoggedUserData);
 
-// router.use(idValidation);
+// 3. مسارات الأدمن (Admin / Manager)
+router.use(allowedTo("admin", "manager"));
+
+router.put("/changePassword/:id", updateUserPassword);
+
+router.route("/").get(getUsers).post(createUserValidator, createUser);
+
 router
-  .route('/:id')
+  .route("/:id")
   .get(getUserValidator, getUser)
   .put(updateUserValidator, updateUser)
   .delete(deleteUserValidator, deleteUser);

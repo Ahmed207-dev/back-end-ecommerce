@@ -1,6 +1,6 @@
-const multer = require('multer');
+const multer = require("multer");
 
-const ApiError = require('../utils/apiError');
+const ApiError = require("../utils/apiError");
 
 // Upload single image => method return multer middleware
 exports.uploadSingleImage = (fieldName) => {
@@ -9,10 +9,10 @@ exports.uploadSingleImage = (fieldName) => {
 
   // Accept only images
   const multerFilter = (req, file, cb) => {
-    if (file.mimetype.startsWith('image')) {
+    if (file && file.mimetype && file.mimetype.startsWith("image")) {
       cb(null, true);
     } else {
-      cb(new ApiError('only images allowed', 400), false);
+      cb(new ApiError("only images allowed", 400), false);
     }
   };
 

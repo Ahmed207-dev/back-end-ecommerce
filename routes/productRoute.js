@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require("express");
 const {
   getProduct,
   getProducts,
@@ -7,35 +7,43 @@ const {
   deleteProduct,
   uploadProductImages,
   resizeProductImages,
-} = require('../controllers/productController');
+} = require("../controllers/productController");
+
 const {
   createProductValidator,
   getProductValidator,
   updateProductValidator,
   deleteProductValidator,
-} = require('../utils/validators/productValidator');
+} = require("../utils/validators/productValidator");
+
+// استيراد ملف مسارات التقييمات
+const reviewRoute = require("./reviewRoute");
 
 const router = express.Router();
 
+// 1. توجيه طلبات تقييمات منتج معين إلى reviewRoute
+router.use("/:productId/reviews", reviewRoute);
+
+// 2. مسارات المنتجات العامة
 router
-  .route('/')
+  .route("/")
   .get(getProducts)
   .post(
     uploadProductImages,
     resizeProductImages,
     createProductValidator,
-    createProduct
+    createProduct,
   );
 
-// router.use(idValidation);
+// 3. مسارات المنتج بالـ ID
 router
-  .route('/:id')
+  .route("/:id")
   .get(getProductValidator, getProduct)
   .put(
     uploadProductImages,
     resizeProductImages,
     updateProductValidator,
-    updateProduct
+    updateProduct,
   )
   .delete(deleteProductValidator, deleteProduct);
 

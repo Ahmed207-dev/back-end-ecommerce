@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require("express");
 const {
   getBrands,
   createBrand,
@@ -8,25 +8,25 @@ const {
   uploadBrandImage,
   resizeImage,
   deleteAll,
-} = require('../controllers/brandController');
+} = require("../controllers/brandController");
 const {
   createBrandValidator,
   getBrandValidator,
   updateBrandValidator,
   deleteBrandValidator,
-} = require('../utils/validators/brandValidator');
+} = require("../utils/validators/brandValidator");
 
 const router = express.Router();
 
 router
-  .route('/')
+  .route("/")
   .get(getBrands)
   .post(uploadBrandImage, resizeImage, createBrandValidator, createBrand)
   .delete(deleteAll);
 
 // router.use(idValidation);
 router
-  .route('/:id')
+  .route("/:id")
   .get(getBrandValidator, getBrand)
   .put(uploadBrandImage, resizeImage, updateBrandValidator, updateBrand)
   .delete(deleteBrandValidator, deleteBrand);

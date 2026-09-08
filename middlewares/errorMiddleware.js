@@ -1,15 +1,4 @@
-const AppError = require('../utils/apiError');
-// 1) With out development mode
-// const customError = (err, req, res, next) => {
-//   // console.log(err.stack);
-
-//   res.status(err.statusCode).json({
-//     status: err.status,
-//     error: err,
-//     message: err.message,
-//     stack: err.stack,
-//   });
-// };
+const AppError = require("../utils/apiError");
 
 const sendErrorForDev = (err, req, res) => {
   res.status(err.statusCode).json({
@@ -21,37 +10,67 @@ const sendErrorForDev = (err, req, res) => {
 };
 
 const sendErrorForProduction = (err, req, res) => {
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message,
+  // Operational, trusted error: send message to client
+  if (err.isOperational) {
+    return res.status(err.statusCode).json({
+      status: err.status,
+      message: err.message,
+    });
+  }
+
+  // Programming or other unknown error: don't leak error details
+  console.error("ERROR 💥", err);
+  return res.status(500).json({
+    status: "error",
+    message: "Something went very wrong!",
   });
 };
-// module.exports = customError;
+
+// معالجة خطأ القيم المكررة في الداتابيز بشكل آمن بدون كراش
 const handleDuplicateFieldsDB = (err) => {
-  const value = err.errmsg.match(/(["'])(?:(?=(\\?))\2.)*?\1/)[0];
+  // استخراج النص المكرر من errmsg أو keyValue
+  let value = "";
+
+  if (err.keyValue) {
+    value = Object.values(err.keyValue)[0];
+  } else if (err.errmsg) {
+    const match = err.errmsg.match(/(["'])(?:(?=(\\?))\2.)*?\1/);
+    value = match ? match[0] : "";
+  }
+
   const message = `Duplicate field value: ${value}. Please use another value!`;
   return new AppError(message, 400);
 };
 
 const handleJWTError = () =>
-  new AppError('Invalid Token. please login again', 401);
+  new AppError("Invalid Token. please login again", 401);
 
 const handleExpiredJWT = () =>
-  new AppError('Expired Token. please login again', 401);
+  new AppError("Expired Token. please login again", 401);
 
-/* Define a global error handling middleware by specifying 4 parameters express know automatically that
-    this is error handling middleware   */
 const globalError = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
-  err.status = err.status || 'error';
+  err.status = err.status || "error";
 
-  if (process.env.NODE_ENV === 'development') {
-    sendErrorForDev(err, req, res);
+  if (process.env.NODE_ENV === "development") {
+    // في حالة التطوير، سنفحص أخطاء MongoDB أيضاً لتظهر لك الرسالة الواضحة فوراً
+    let error = { ...err };
+    error.message = err.message;
+
+    if (err.code === 11000) error = handleDuplicateFieldsDB(err);
+    if (err.name === "JsonWebTokenError") error = handleJWTError();
+    if (err.name === "TokenExpiredError") error = handleExpiredJWT();
+
+    sendErrorForDev(error, req, res);
   } else {
-    if (err.code === 11000) err = handleDuplicateFieldsDB(err);
-    if (err.name === 'JsonWebTokenError') err = handleJWTError();
-    if (err.name === 'TokenExpiredError') err = handleExpiredJWT();
-    sendErrorForProduction(err, req, res);
+    let error = { ...err };
+    error.message = err.message;
+
+    if (err.code === 11000) error = handleDuplicateFieldsDB(err);
+    if (err.name === "JsonWebTokenError") error = handleJWTError();
+    if (err.name === "TokenExpiredError") error = handleExpiredJWT();
+
+    sendErrorForProduction(error, req, res);
   }
 };
 

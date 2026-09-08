@@ -19,12 +19,26 @@ const brandRouter = require("./routes/brandRoute");
 const productRouter = require("./routes/productRoute");
 const userRouter = require("./routes/userRoute");
 const authRouter = require("./routes/authRoute");
-
+const reviewRouter = require("./routes/reviewRoute"); // 1. استيراد مسار التقييمات
+const wishlistRoute = require("./routes/wishlistRoute"); // أو اسم الملف لديك
+const addressRouter = require("./routes/addressRoute");
+const cartRouter = require("./routes/cartRoute");
+const orderRoute = require("./routes/orderRoute");
 // DB Connection
 dbConnection();
 
 // Builtin Middleware
 const app = express();
+
+//
+
+const couponRouter = require("./routes/couponRoute");
+
+app.use(express.json());
+
+// Mounting Routes
+
+//
 // Used to parse JSON bodies
 app.use(express.json());
 
@@ -41,8 +55,6 @@ if (process.env.NODE_ENV === "development") {
   console.log(`Mode : ${process.env.NODE_ENV}`.yellow);
 }
 
-app.options("*", cors());
-
 // Mount routers
 app.use("/api/v1/categories", categoryRouter);
 app.use("/api/v1/subcategories", subCategoryRouter);
@@ -50,14 +62,17 @@ app.use("/api/v1/brands", brandRouter);
 app.use("/api/v1/products", productRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/auth", authRouter);
-
+app.use("/api/v1/reviews", reviewRouter);
+app.use("/api/v1/wishlist", wishlistRoute);
+app.use("/api/v1/coupons", couponRouter);
+app.use("/api/v1/addresses", addressRouter);
+app.use("/api/v1/cart", cartRouter);
+app.use("/api/v1/orders", orderRoute);
 app.all("*", (req, res, next) => {
-  // 3) Use a generic api error
   next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400));
 });
 
-// Global error handler to catch error from express error
-// 2) with refactoring
+// Global error handler
 app.use(globalError);
 
 const PORT = process.env.PORT || 8000;
@@ -65,8 +80,7 @@ const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`.green);
 });
 
-// we are listening to this unhandled rejection event, which then allow us to handle all
-// errors that occur in asynchronous code which were not previously handled
+// Handle unhandled promise rejections
 process.on("unhandledRejection", (err) => {
   console.log(err.name, err.message);
   server.close(() => {
