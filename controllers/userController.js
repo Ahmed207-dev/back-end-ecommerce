@@ -6,14 +6,13 @@ const ApiError = require("../utils/apiError");
 const factory = require("./handlersFactory");
 const User = require("../models/userModel");
 
-// دالة لتوليد الـ Token بنفس الأسماء الموجودة في config.env عندك (JWT_SECRET)
 const createToken = (payload) =>
   jwt.sign({ id: payload }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
 // ==========================================
-// 1. Logged User Controllers (المستخدم المسجل)
+// 1. Logged User Controllers
 // ==========================================
 
 // @desc    Get Logged user data
@@ -28,10 +27,8 @@ exports.getLoggedUserData = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/v1/users/changeMyPassword
 // @access  Protected/User
 exports.updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
-  // 1) جلب البيانات باستعمال الـ Token
   const user = await User.findById(req.user._id);
 
-  // 2) التحقق من صحة كلمة السر الحالية
   const isCorrectPassword = await bcrypt.compare(
     req.body.currentPassword,
     user.password,
@@ -40,12 +37,10 @@ exports.updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
     return next(new ApiError("Current password is incorrect", 400));
   }
 
-  // 3) تحديث كلمة السر
   user.password = req.body.password;
   user.passwordChangedAt = Date.now();
   await user.save();
 
-  // 4) إنشاء توكين جديد وإرجاعه
   const token = createToken(user._id);
 
   res.status(200).json({
@@ -82,7 +77,7 @@ exports.deleteLoggedUserData = asyncHandler(async (req, res, next) => {
 });
 
 // ==========================================
-// 2. Admin Controllers (إدارة المستخدين)
+// 2. Admin Controllers
 // ==========================================
 
 // @desc    Get all users

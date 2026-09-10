@@ -14,7 +14,6 @@ const {
   deleteUser,
 } = require("../controllers/userController");
 
-// استدعِ الـ Validators اللي موجودة فعلياً في مشروعك بس
 const {
   getUserValidator,
   createUserValidator,
@@ -24,16 +23,13 @@ const {
 
 const router = express.Router();
 
-// 1. حماية المسارات (login required)
 router.use(auth);
 
-// 2. مسارات المستخدم المسجل (Logged User)
 router.get("/getMe", getLoggedUserData, getUser);
 router.put("/changeMyPassword", updateLoggedUserPassword);
 router.put("/updateMe", updateLoggedUserData);
 router.delete("/deleteMe", deleteLoggedUserData);
 
-// 3. مسارات الأدمن (Admin / Manager)
 router.use(allowedTo("admin", "manager"));
 
 router.put("/changePassword/:id", updateUserPassword);

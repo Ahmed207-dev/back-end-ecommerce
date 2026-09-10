@@ -6,7 +6,7 @@ const {
   removeSpecificCartItem,
   clearCart,
   updateCartItemQuantity,
-  applyCoupon, // 1) استيراد الدالة من الـ Controller
+  applyCoupon, 
 } = require("../controllers/cartController");
 const { auth, allowedTo } = require("../controllers/authController");
 
@@ -20,7 +20,6 @@ router
   .get(getLoggedUserCart)
   .delete(clearCart);
 
-// 2) وضع مسار الكوبون قبل الـ Dynamic Params (/:itemId)
 router.put("/applyCoupon", applyCoupon);
 
 router

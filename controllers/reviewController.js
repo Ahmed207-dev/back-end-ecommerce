@@ -1,12 +1,11 @@
 const asyncHandler = require("express-async-handler");
 const Review = require("../models/reviewModel");
-const ApiError = require("../utils/apiError"); // 👈 أضف هذا السطر
+const ApiError = require("../utils/apiError"); 
+
 exports.createReview = asyncHandler(async (req, res, next) => {
-  // 1. ربط المنتَج والمستخدم بالطلب تلقائياً
   if (!req.body.product) req.body.product = req.params.productId;
   if (!req.body.user && req.user) req.body.user = req.user._id;
 
-  // 2. مطابقة أسماء الحقول المرسلة من الرياكت مع الموديل
   if (!req.body.title) {
     req.body.title = req.body.review || req.body.comment || "تقييم جديد";
   }
@@ -14,7 +13,6 @@ exports.createReview = asyncHandler(async (req, res, next) => {
     req.body.rating = req.body.ratings;
   }
 
-  // 3. إنشاء التقييم في MongoDB
   const newReview = await Review.create(req.body);
   res.status(201).json({ status: "success", data: newReview });
 });

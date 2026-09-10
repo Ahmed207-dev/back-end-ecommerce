@@ -26,9 +26,7 @@ const sendErrorForProduction = (err, req, res) => {
   });
 };
 
-// معالجة خطأ القيم المكررة في الداتابيز بشكل آمن بدون كراش
 const handleDuplicateFieldsDB = (err) => {
-  // استخراج النص المكرر من errmsg أو keyValue
   let value = "";
 
   if (err.keyValue) {
@@ -53,7 +51,6 @@ const globalError = (err, req, res, next) => {
   err.status = err.status || "error";
 
   if (process.env.NODE_ENV === "development") {
-    // في حالة التطوير، سنفحص أخطاء MongoDB أيضاً لتظهر لك الرسالة الواضحة فوراً
     let error = { ...err };
     error.message = err.message;
 

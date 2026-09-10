@@ -1,7 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/apiError");
 const Product = require("../models/productModel");
-const Coupon = require("../models/couponModel"); // تأكد من وجود وتطابق مسار موديل الكوبون
+const Coupon = require("../models/couponModel");
 const Cart = require("../models/cartModel");
 
 // دالة لحساب مجموع سعر العربة
@@ -17,7 +17,6 @@ const calcTotalCartPrice = (cart) => {
   return totalPrice;
 };
 
-// إعداد خيارات الـ Populate لعرض تفاصيل المنتج والتصنيف والبراند
 const cartPopulateOptions = {
   path: "cartItems.product",
   select: "title imageCover ratingsAverage brand category",
@@ -38,17 +37,14 @@ exports.addProductToCart = asyncHandler(async (req, res, next) => {
     return next(new ApiError("Product not found", 404));
   }
 
-  // 1) جلب الـ Cart الخاصة بالمستخدم
   let cart = await Cart.findOne({ user: req.user._id });
 
   if (!cart) {
-    // إن كانت العربة غير موجودة، يتم إنشاؤها
     cart = await Cart.create({
       user: req.user._id,
       cartItems: [{ product: productId, color, price: product.price }],
     });
   } else {
-    // 2) إذا كانت العربة موجودة، يتم التحقق هل المنتج بنفس اللون موجود بها أم لا
     const productIndex = cart.cartItems.findIndex(
       (item) => item.product.toString() === productId && item.color === color,
     );
@@ -62,11 +58,9 @@ exports.addProductToCart = asyncHandler(async (req, res, next) => {
     }
   }
 
-  // حساب السعر الإجمالي
   calcTotalCartPrice(cart);
   await cart.save();
 
-  // جلب البيانات مع التفاصيل كاملة للمنتج والـ Category والـ Brand
   cart = await cart.populate(cartPopulateOptions);
 
   res.status(200).json({

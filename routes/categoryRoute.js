@@ -15,7 +15,6 @@ const {
   updateCategoryValidator,
   deleteCategoryValidator,
 } = require('../utils/validators/categoryValidator');
-const authController = require('../controllers/authController');
 
 const subCategoryRoute = require('./subCategoryRoute');
 

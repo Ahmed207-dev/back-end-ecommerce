@@ -16,15 +16,12 @@ const {
   deleteProductValidator,
 } = require("../utils/validators/productValidator");
 
-// استيراد ملف مسارات التقييمات
 const reviewRoute = require("./reviewRoute");
 
 const router = express.Router();
 
-// 1. توجيه طلبات تقييمات منتج معين إلى reviewRoute
 router.use("/:productId/reviews", reviewRoute);
 
-// 2. مسارات المنتجات العامة
 router
   .route("/")
   .get(getProducts)
@@ -35,7 +32,6 @@ router
     createProduct,
   );
 
-// 3. مسارات المنتج بالـ ID
 router
   .route("/:id")
   .get(getProductValidator, getProduct)

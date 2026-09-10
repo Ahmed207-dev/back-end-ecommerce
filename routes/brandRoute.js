@@ -24,7 +24,6 @@ router
   .post(uploadBrandImage, resizeImage, createBrandValidator, createBrand)
   .delete(deleteAll);
 
-// router.use(idValidation);
 router
   .route("/:id")
   .get(getBrandValidator, getBrand)

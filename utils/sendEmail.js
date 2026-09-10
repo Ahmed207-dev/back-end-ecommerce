@@ -11,7 +11,7 @@ const sendEmail = async (options) => {
       pass: process.env.EMAIL_PASSWORD,
     },
     tls: {
-      rejectUnauthorized: false, // بتلغي فحص الشهادة وتعدي الـ Antivirus / Network SSL Blocking
+      rejectUnauthorized: false, // Disables certificate verification and bypasses Antivirus / Network SSL Blocking
     },
   });
 

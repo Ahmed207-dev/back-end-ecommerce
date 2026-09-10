@@ -16,7 +16,6 @@ router.use(auth, allowedTo("user", "admin", "manager"));
 
 router.route("/").post(addAddress).get(getLoggedUserAddresses);
 
-// الـ Routes الخاصة بـ ID معين
 router
   .route("/:addressId")
   .get(getSpecificAddress)

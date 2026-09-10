@@ -12,7 +12,6 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
   const taxPrice = 0;
   const shippingPrice = 0;
 
-  // 1) جلب عربة الشراء عن طريق الـ cartId
   const cart = await Cart.findById(req.params.cartId);
   if (!cart) {
     return next(
@@ -20,14 +19,12 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
     );
   }
 
-  // 2) حساب الإجمالي بناءً على وجود خصم الكوبون أو لا
   const cartPrice = cart.totalPriceAfterDiscount
     ? cart.totalPriceAfterDiscount
     : cart.totalCartPrice;
 
   const totalOrderPrice = cartPrice + taxPrice + shippingPrice;
 
-  // 3) إنشاء الطلب
   const order = await Order.create({
     user: req.user._id,
     cartItems: cart.cartItems,
@@ -38,7 +35,6 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
     totalOrderPrice,
   });
 
-  // 4) خصم الكمية وزيادة الـ sold في الـ Product Model
   if (order) {
     const bulkOption = cart.cartItems.map((item) => ({
       updateOne: {
@@ -48,7 +44,6 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
     }));
     await Product.bulkWrite(bulkOption, {});
 
-    // 5) مسح الـ Cart للمستخدم بعد نجاح الأوردر
     await Cart.findByIdAndDelete(req.params.cartId);
   }
 
@@ -64,12 +59,10 @@ exports.findAllOrders = asyncHandler(async (req, res, next) => {
     filterObj = { user: req.user._id };
   }
 
-  // 1) إعدادات الـ Pagination
   const page = req.query.page * 1 || 1;
   const limit = req.query.limit * 1 || 5;
   const skip = (page - 1) * limit;
 
-  // 2) حساب إجمالي المستندات والصفحات
   const countDocuments = await Order.countDocuments(filterObj);
   const numberOfPages = Math.ceil(countDocuments / limit);
 
@@ -86,7 +79,6 @@ exports.findAllOrders = asyncHandler(async (req, res, next) => {
     paginationResult.prev = page - 1;
   }
 
-  // 3) استعلام البيانات بالحد والتخطي
   const orders = await Order.find(filterObj).skip(skip).limit(limit);
 
   res.status(200).json({
@@ -155,7 +147,6 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
   const taxPrice = 0;
   const shippingPrice = 0;
 
-  // 1) جلب عربة الشراء عن طريق الـ cartId
   const cart = await Cart.findById(req.params.cartId);
   if (!cart) {
     return next(
@@ -163,14 +154,12 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
     );
   }
 
-  // 2) حساب إجمالي السعر
   const cartPrice = cart.totalPriceAfterDiscount
     ? cart.totalPriceAfterDiscount
     : cart.totalCartPrice;
 
   const totalOrderPrice = cartPrice + taxPrice + shippingPrice;
 
-  // 3) إنشاء جلسة دفع في Stripe
   const session = await stripe.checkout.sessions.create({
     line_items: [
       {
@@ -192,6 +181,5 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
     metadata: req.body.shippingAddress,
   });
 
-  // 4) إرسال الـ session للعميل
   res.status(200).json({ status: "success", session });
 });

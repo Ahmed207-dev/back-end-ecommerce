@@ -62,9 +62,6 @@ exports.resizeProductImages = asyncHandler(async (req, res, next) => {
       })
     );
   }
-
-  // console.log(req.body.imageCover);
-  // console.log(req.body.images);
   next();
 });
 
