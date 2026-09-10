@@ -99,12 +99,6 @@ const brandDataArray = [
       "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=800&q=80",
   },
   {
-    name: "LG",
-    slug: "lg",
-    image:
-      "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?auto=format&fit=crop&w=800&q=80",
-  },
-  {
     name: "Lenovo",
     slug: "lenovo",
     image:
