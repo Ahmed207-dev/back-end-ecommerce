@@ -5,7 +5,7 @@ const {
   getLoggedUserWishlist,
 } = require("../controllers/wishlistController");
 
-// استيراد authController بالمسار الصحيح
+// استيراد authController  بالمسار الصحيح
 const authService = require("../controllers/authController");
 
 const router = express.Router();
