@@ -25,7 +25,7 @@ const cartSchema = new mongoose.Schema(
       required: [true, "Cart must belong to user"],
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("Cart", cartSchema);

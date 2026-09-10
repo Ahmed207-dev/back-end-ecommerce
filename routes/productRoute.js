@@ -29,7 +29,7 @@ router
     uploadProductImages,
     resizeProductImages,
     createProductValidator,
-    createProduct,
+    createProduct
   );
 
 router
@@ -39,7 +39,7 @@ router
     uploadProductImages,
     resizeProductImages,
     updateProductValidator,
-    updateProduct,
+    updateProduct
   )
   .delete(deleteProductValidator, deleteProduct);
 

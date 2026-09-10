@@ -12,7 +12,7 @@ exports.addAddress = asyncHandler(async (req, res, next) => {
     {
       $addToSet: { addresses: req.body },
     },
-    { new: true },
+    { new: true }
   );
 
   res.status(200).json({
@@ -31,7 +31,7 @@ exports.removeAddress = asyncHandler(async (req, res, next) => {
     {
       $pull: { addresses: { _id: req.params.addressId } },
     },
-    { new: true },
+    { new: true }
   );
 
   res.status(200).json({
@@ -66,8 +66,8 @@ exports.getSpecificAddress = asyncHandler(async (req, res, next) => {
     return next(
       new ApiError(
         `No address found with this id: ${req.params.addressId}`,
-        404,
-      ),
+        404
+      )
     );
   }
 
@@ -86,8 +86,8 @@ exports.updateAddress = asyncHandler(async (req, res, next) => {
     return next(
       new ApiError(
         `No address found with this id: ${req.params.addressId}`,
-        404,
-      ),
+        404
+      )
     );
   }
 

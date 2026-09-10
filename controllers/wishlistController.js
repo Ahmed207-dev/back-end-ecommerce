@@ -11,7 +11,7 @@ exports.addProductToWishlist = asyncHandler(async (req, res, next) => {
     {
       $addToSet: { wishlist: req.body.productId },
     },
-    { new: true },
+    { new: true }
   );
 
   res.status(200).json({
@@ -31,7 +31,7 @@ exports.removeProductFromWishlist = asyncHandler(async (req, res, next) => {
     {
       $pull: { wishlist: req.params.productId },
     },
-    { new: true },
+    { new: true }
   );
 
   res.status(200).json({

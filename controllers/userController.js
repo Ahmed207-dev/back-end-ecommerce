@@ -31,7 +31,7 @@ exports.updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
 
   const isCorrectPassword = await bcrypt.compare(
     req.body.currentPassword,
-    user.password,
+    user.password
   );
   if (!isCorrectPassword) {
     return next(new ApiError("Current password is incorrect", 400));
@@ -61,7 +61,7 @@ exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
       email: req.body.email,
       phone: req.body.phone,
     },
-    { new: true, runValidators: true },
+    { new: true, runValidators: true }
   );
 
   res.status(200).json({ status: "success", data: updatedUser });
@@ -119,12 +119,12 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
       phone: req.body.phone,
       role: req.body.role,
     },
-    { new: true },
+    { new: true }
   );
 
   if (!document) {
     return next(
-      new ApiError(`No document found for this id: ${req.params.id}`, 404),
+      new ApiError(`No document found for this id: ${req.params.id}`, 404)
     );
   }
 
@@ -141,12 +141,12 @@ exports.updateUserPassword = asyncHandler(async (req, res, next) => {
       password: await bcrypt.hash(req.body.password, 12),
       passwordChangedAt: Date.now(),
     },
-    { new: true },
+    { new: true }
   );
 
   if (!document) {
     return next(
-      new ApiError(`No document found for this id: ${req.params.id}`, 404),
+      new ApiError(`No document found for this id: ${req.params.id}`, 404)
     );
   }
 

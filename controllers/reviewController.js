@@ -1,6 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Review = require("../models/reviewModel");
-const ApiError = require("../utils/apiError"); 
+const ApiError = require("../utils/apiError");
 
 exports.createReview = asyncHandler(async (req, res, next) => {
   if (!req.body.product) req.body.product = req.params.productId;

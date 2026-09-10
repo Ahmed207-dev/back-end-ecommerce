@@ -1,37 +1,37 @@
-const sharp = require('sharp');
-const { v4: uuidv4 } = require('uuid');
-const asyncHandler = require('express-async-handler');
+const sharp = require("sharp");
+const { v4: uuidv4 } = require("uuid");
+const asyncHandler = require("express-async-handler");
 
-const multer = require('multer');
+const multer = require("multer");
 
-const ApiError = require('../utils/apiError');
-const Product = require('../models/productModel');
-const factory = require('./handlersFactory');
+const ApiError = require("../utils/apiError");
+const Product = require("../models/productModel");
+const factory = require("./handlersFactory");
 
 // Storage
 const multerStorage = multer.memoryStorage();
 
 // Accept only images
 const multerFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith('image')) {
+  if (file.mimetype.startsWith("image")) {
     cb(null, true);
   } else {
-    cb(new ApiError('only images allowed', 400), false);
+    cb(new ApiError("only images allowed", 400), false);
   }
 };
 
 const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 
 exports.uploadProductImages = upload.fields([
-  { name: 'imageCover', maxCount: 1 },
-  { name: 'images', maxCount: 5 },
+  { name: "imageCover", maxCount: 1 },
+  { name: "images", maxCount: 5 },
 ]);
 
 exports.resizeProductImages = asyncHandler(async (req, res, next) => {
   // console.log(req.files);
   // 1) Image Process for imageCover
   if (req.files.imageCover) {
-    const ext = req.files.imageCover[0].mimetype.split('/')[1];
+    const ext = req.files.imageCover[0].mimetype.split("/")[1];
     const imageCoverFilename = `products-${uuidv4()}-${Date.now()}-cover.${ext}`;
     await sharp(req.files.imageCover[0].buffer)
       // .resize(2000, 1333)
@@ -47,7 +47,7 @@ exports.resizeProductImages = asyncHandler(async (req, res, next) => {
   if (req.files.images) {
     await Promise.all(
       req.files.images.map(async (img, index) => {
-        const ext = img.mimetype.split('/')[1];
+        const ext = img.mimetype.split("/")[1];
         const filename = `products-${uuidv4()}-${Date.now()}-${
           index + 1
         }.${ext}`;
@@ -68,7 +68,7 @@ exports.resizeProductImages = asyncHandler(async (req, res, next) => {
 // @desc      Get all products
 // @route     GET /api/v1/products
 // @access    Public
-exports.getProducts = factory.getAll(Product, 'Products');
+exports.getProducts = factory.getAll(Product, "Products");
 
 // @desc      Get specific product by id
 // @route     GET /api/v1/products/:id

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const categorySchema = new mongoose.Schema(
   {
@@ -6,10 +6,10 @@ const categorySchema = new mongoose.Schema(
       type: String,
       trim: true,
       // index: true,
-      required: [true, 'Category required'],
-      unique: [true, 'Category must be unique'],
-      minlength: [3, 'Too short category name'],
-      maxlength: [32, 'Too long category name'],
+      required: [true, "Category required"],
+      unique: [true, "Category must be unique"],
+      minlength: [3, "Too short category name"],
+      maxlength: [32, "Too long category name"],
     },
     slug: {
       type: String,
@@ -37,14 +37,14 @@ const setImageUrl = (doc) => {
   }
 };
 
-categorySchema.post('init', (doc) => {
+categorySchema.post("init", (doc) => {
   setImageUrl(doc);
 });
 
-categorySchema.post('save', (doc) => {
+categorySchema.post("save", (doc) => {
   setImageUrl(doc);
 });
 
-const Category = mongoose.model('Category', categorySchema);
+const Category = mongoose.model("Category", categorySchema);
 
 module.exports = Category;

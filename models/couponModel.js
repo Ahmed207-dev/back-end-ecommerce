@@ -18,7 +18,7 @@ const couponSchema = new mongoose.Schema(
       required: [true, "Coupon discount value is required"],
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("Coupon", couponSchema);

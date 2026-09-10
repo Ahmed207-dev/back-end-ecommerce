@@ -6,7 +6,7 @@ const {
   removeSpecificCartItem,
   clearCart,
   updateCartItemQuantity,
-  applyCoupon, 
+  applyCoupon,
 } = require("../controllers/cartController");
 const { auth, allowedTo } = require("../controllers/authController");
 

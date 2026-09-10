@@ -46,7 +46,7 @@ exports.addProductToCart = asyncHandler(async (req, res, next) => {
     });
   } else {
     const productIndex = cart.cartItems.findIndex(
-      (item) => item.product.toString() === productId && item.color === color,
+      (item) => item.product.toString() === productId && item.color === color
     );
 
     if (productIndex > -1) {
@@ -76,12 +76,12 @@ exports.addProductToCart = asyncHandler(async (req, res, next) => {
 // @access  Protected/User
 exports.getLoggedUserCart = asyncHandler(async (req, res, next) => {
   const cart = await Cart.findOne({ user: req.user._id }).populate(
-    cartPopulateOptions,
+    cartPopulateOptions
   );
 
   if (!cart) {
     return next(
-      new ApiError(`There is no cart for this user id : ${req.user._id}`, 404),
+      new ApiError(`There is no cart for this user id : ${req.user._id}`, 404)
     );
   }
 
@@ -101,7 +101,7 @@ exports.removeSpecificCartItem = asyncHandler(async (req, res, next) => {
     {
       $pull: { cartItems: { _id: req.params.itemId } },
     },
-    { new: true },
+    { new: true }
   ).populate(cartPopulateOptions);
 
   calcTotalCartPrice(cart);
@@ -135,7 +135,7 @@ exports.updateCartItemQuantity = asyncHandler(async (req, res, next) => {
   }
 
   const itemIndex = cart.cartItems.findIndex(
-    (item) => item._id.toString() === req.params.itemId,
+    (item) => item._id.toString() === req.params.itemId
   );
 
   if (itemIndex > -1) {
@@ -144,7 +144,7 @@ exports.updateCartItemQuantity = asyncHandler(async (req, res, next) => {
     cart.cartItems[itemIndex] = cartItem;
   } else {
     return next(
-      new ApiError(`There is no item for this id : ${req.params.itemId}`, 404),
+      new ApiError(`There is no item for this id : ${req.params.itemId}`, 404)
     );
   }
 

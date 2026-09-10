@@ -60,7 +60,7 @@ const orderSchema = new mongoose.Schema(
     },
     deliveredAt: Date,
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 // Populate تلقائي فقط مع استعلامات البحث (find / findOne)

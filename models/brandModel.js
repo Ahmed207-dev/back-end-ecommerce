@@ -1,13 +1,13 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const brandSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       trim: true,
-      unique: [true, 'Brand must be unique'],
-      minlength: [3, 'Too short brand name'],
-      maxlength: [32, 'Too long brand name'],
+      unique: [true, "Brand must be unique"],
+      minlength: [3, "Too short brand name"],
+      maxlength: [32, "Too long brand name"],
     },
     slug: {
       type: String,
@@ -37,14 +37,14 @@ const setImageUrl = (doc) => {
   }
 };
 
-brandSchema.post('init', (doc) => {
+brandSchema.post("init", (doc) => {
   setImageUrl(doc);
 });
 
-brandSchema.post('save', (doc) => {
+brandSchema.post("save", (doc) => {
   setImageUrl(doc);
 });
 
-const Brand = mongoose.model('Brand', brandSchema);
+const Brand = mongoose.model("Brand", brandSchema);
 
 module.exports = Brand;

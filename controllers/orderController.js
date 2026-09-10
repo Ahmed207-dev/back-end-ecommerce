@@ -15,7 +15,7 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
   const cart = await Cart.findById(req.params.cartId);
   if (!cart) {
     return next(
-      new ApiError(`There is no cart with id ${req.params.cartId}`, 404),
+      new ApiError(`There is no cart with id ${req.params.cartId}`, 404)
     );
   }
 
@@ -97,7 +97,7 @@ exports.findSpecificOrder = asyncHandler(async (req, res, next) => {
 
   if (!order) {
     return next(
-      new ApiError(`There is no order with this id ${req.params.id}`, 404),
+      new ApiError(`There is no order with this id ${req.params.id}`, 404)
     );
   }
 
@@ -111,7 +111,7 @@ exports.updateOrderToPaid = asyncHandler(async (req, res, next) => {
   const order = await Order.findById(req.params.id);
   if (!order) {
     return next(
-      new ApiError(`There is no order with this id ${req.params.id}`, 404),
+      new ApiError(`There is no order with this id ${req.params.id}`, 404)
     );
   }
 
@@ -129,7 +129,7 @@ exports.updateOrderToDelivered = asyncHandler(async (req, res, next) => {
   const order = await Order.findById(req.params.id);
   if (!order) {
     return next(
-      new ApiError(`There is no order with this id ${req.params.id}`, 404),
+      new ApiError(`There is no order with this id ${req.params.id}`, 404)
     );
   }
 
@@ -150,7 +150,7 @@ exports.checkoutSession = asyncHandler(async (req, res, next) => {
   const cart = await Cart.findById(req.params.cartId);
   if (!cart) {
     return next(
-      new ApiError(`There is no cart with id ${req.params.cartId}`, 404),
+      new ApiError(`There is no cart with id ${req.params.cartId}`, 404)
     );
   }
 

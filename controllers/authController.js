@@ -70,7 +70,7 @@ exports.auth = asyncHandler(async (req, res, next) => {
   }
   if (!token) {
     return next(
-      new ApiError("You are not logged in. Please login to get access", 401),
+      new ApiError("You are not logged in. Please login to get access", 401)
     );
   }
   // 2- Verify the token (check if the token changes the payload or the token is expired)
@@ -83,21 +83,21 @@ exports.auth = asyncHandler(async (req, res, next) => {
   const currentUser = await User.findById(decoded.id);
   if (!currentUser) {
     return next(
-      new ApiError("The user that belong to this token does no longer exist"),
+      new ApiError("The user that belong to this token does no longer exist")
     );
   }
   // 4- Check if user change his password after generating the token
   if (currentUser.passwordChangedAt) {
     const passChangedTimestamp = parseInt(
       currentUser.passwordChangedAt.getTime() / 1000,
-      10,
+      10
     );
     if (passChangedTimestamp > decoded.iat) {
       return next(
         new ApiError(
           "User recently changed password! Please login again..",
-          401,
-        ),
+          401
+        )
       );
     }
     // console.log(passChangedTimestamp, decoded.iat);
@@ -115,7 +115,7 @@ exports.allowedTo = (...roles) =>
     // ["admin"] or ["admin", "editor"]
     if (!roles.includes(req.user.role)) {
       return next(
-        new ApiError("You are not allowed to perform this action", 403),
+        new ApiError("You are not allowed to perform this action", 403)
       );
     }
     next();
@@ -130,7 +130,7 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({ email });
   if (!user) {
     return next(
-      new ApiError(`There is no user with this email address ${email}`, 404),
+      new ApiError(`There is no user with this email address ${email}`, 404)
     );
   }
   // 2) Generate the random reset token or random 6 digits and save it in db (explain it on draw.io)
@@ -180,8 +180,8 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
     return next(
       new ApiError(
         "There was an error sending the email. Try again later!",
-        500,
-      ),
+        500
+      )
     );
   }
 });
@@ -223,8 +223,8 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
     return next(
       new ApiError(
         `There is no user with this email address ${req.body.email}`,
-        404,
-      ),
+        404
+      )
     );
   }
   // Check if user verify the reset code

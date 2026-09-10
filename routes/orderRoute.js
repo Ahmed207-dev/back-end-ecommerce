@@ -15,45 +15,25 @@ const router = express.Router();
 router.use(auth);
 
 // Checkout Session
-router.get(
-  "/checkout-session/:cartId",
-  allowedTo("user"),
-  checkoutSession,
-);
+router.get("/checkout-session/:cartId", allowedTo("user"), checkoutSession);
 
 // Create cash order
-router.post(
-  "/:cartId",
-  allowedTo("user"),
-  createCashOrder,
-);
+router.post("/:cartId", allowedTo("user"), createCashOrder);
 
 // Get all orders
-router.get(
-  "/",
-  allowedTo("user", "admin", "manager"),
-  findAllOrders,
-);
+router.get("/", allowedTo("user", "admin", "manager"), findAllOrders);
 
 // Get specific order
-router.get(
-  "/:id",
-  allowedTo("user", "admin", "manager"),
-  findSpecificOrder,
-);
+router.get("/:id", allowedTo("user", "admin", "manager"), findSpecificOrder);
 
 // Update payment status
-router.put(
-  "/:id/pay",
-  allowedTo("admin", "manager"),
-  updateOrderToPaid,
-);
+router.put("/:id/pay", allowedTo("admin", "manager"), updateOrderToPaid);
 
 // Update delivery status
 router.put(
   "/:id/deliver",
   allowedTo("admin", "manager"),
-  updateOrderToDelivered,
+  updateOrderToDelivered
 );
 
 module.exports = router;

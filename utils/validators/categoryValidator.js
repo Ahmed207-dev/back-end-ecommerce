@@ -1,16 +1,16 @@
-const slugify = require('slugify');
-const { check, body } = require('express-validator');
+const slugify = require("slugify");
+const { check, body } = require("express-validator");
 const {
   validatorMiddleware,
-} = require('../../middlewares/validatorMiddleware');
+} = require("../../middlewares/validatorMiddleware");
 
 // check() => check body and params etc
 exports.createCategoryValidator = [
-  check('name')
+  check("name")
     .isLength({ min: 3 })
-    .withMessage('must be at least 3 chars')
+    .withMessage("must be at least 3 chars")
     .notEmpty()
-    .withMessage('Category required')
+    .withMessage("Category required")
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
       return true;
@@ -19,13 +19,13 @@ exports.createCategoryValidator = [
 ];
 
 exports.getCategoryValidator = [
-  check('id').isMongoId().withMessage('Invalid ID formate'),
+  check("id").isMongoId().withMessage("Invalid ID formate"),
   validatorMiddleware,
 ];
 
 exports.updateCategoryValidator = [
-  check('id').isMongoId().withMessage('Invalid ID formate'),
-  body('name')
+  check("id").isMongoId().withMessage("Invalid ID formate"),
+  body("name")
     .optional()
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
@@ -35,6 +35,6 @@ exports.updateCategoryValidator = [
 ];
 
 exports.deleteCategoryValidator = [
-  check('id').isMongoId().withMessage('Invalid ID formate'),
+  check("id").isMongoId().withMessage("Invalid ID formate"),
   validatorMiddleware,
 ];

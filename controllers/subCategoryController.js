@@ -1,5 +1,5 @@
-const SubCategory = require('../models/subCategoryModel');
-const factory = require('./handlersFactory');
+const SubCategory = require("../models/subCategoryModel");
+const factory = require("./handlersFactory");
 
 // Middleware to Set CategoryId to body before creating subcategory (create subcategory for category)
 exports.setCategoryIdBody = (req, res, next) => {

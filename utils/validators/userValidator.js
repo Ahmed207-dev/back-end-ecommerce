@@ -1,29 +1,29 @@
-const slugify = require('slugify');
-const bcrypt = require('bcryptjs');
-const { check, body } = require('express-validator');
+const slugify = require("slugify");
+const bcrypt = require("bcryptjs");
+const { check, body } = require("express-validator");
 const {
   validatorMiddleware,
-} = require('../../middlewares/validatorMiddleware');
-const User = require('../../models/userModel');
+} = require("../../middlewares/validatorMiddleware");
+const User = require("../../models/userModel");
 // Check email is email
 // check if password confirm = password
 // check if email already in user
 // make validation like schema
 exports.createUserValidator = [
-  check('name')
+  check("name")
     .isLength({ min: 3 })
-    .withMessage('must be at least 3 chars')
+    .withMessage("must be at least 3 chars")
     .notEmpty()
-    .withMessage('name required field')
+    .withMessage("name required field")
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
       return true;
     }),
-  check('email')
+  check("email")
     .notEmpty()
-    .withMessage('Email required field')
+    .withMessage("Email required field")
     .isEmail()
-    .withMessage('Invalid email formate')
+    .withMessage("Invalid email formate")
     .custom((val) =>
       User.findOne({ email: val }).then((user) => {
         if (user) {
@@ -31,11 +31,11 @@ exports.createUserValidator = [
         }
       })
     ),
-  check('password')
+  check("password")
     .notEmpty()
-    .withMessage('Password required')
+    .withMessage("Password required")
     .isLength({ min: 6 })
-    .withMessage('must be at least 6 chars')
+    .withMessage("must be at least 6 chars")
     .custom(async (val, { req }) => {
       req.body.password = await bcrypt.hash(val, 12);
       if (val !== req.body.passwordConfirm) {
@@ -43,32 +43,32 @@ exports.createUserValidator = [
       }
       return true;
     }),
-  check('passwordConfirm')
+  check("passwordConfirm")
     .notEmpty()
-    .withMessage('passwordConfirm is required field'),
+    .withMessage("passwordConfirm is required field"),
 
-  check('phone')
+  check("phone")
     .optional()
-    .isMobilePhone('ar-EG')
-    .withMessage('accept only egypt phone numbers'),
+    .isMobilePhone("ar-EG")
+    .withMessage("accept only egypt phone numbers"),
 
   validatorMiddleware,
 ];
 
 exports.getUserValidator = [
-  check('id').isMongoId().withMessage('Invalid ID formate'),
+  check("id").isMongoId().withMessage("Invalid ID formate"),
   validatorMiddleware,
 ];
 
 exports.updateUserValidator = [
-  check('id').isMongoId().withMessage('Invalid ID formate'),
-  body('name')
+  check("id").isMongoId().withMessage("Invalid ID formate"),
+  body("name")
     .optional()
     .custom((val, { req }) => {
       req.body.slug = slugify(val);
       return true;
     }),
-  body('password')
+  body("password")
     .optional()
     .custom(async (val, { req }) => {
       req.body.password = await bcrypt.hash(val, 12);
@@ -79,17 +79,17 @@ exports.updateUserValidator = [
 ];
 
 exports.deleteUserValidator = [
-  check('id').isMongoId().withMessage('Invalid ID formate'),
+  check("id").isMongoId().withMessage("Invalid ID formate"),
   validatorMiddleware,
 ];
 
 exports.changeUserPasswordValidator = [
-  check('id').isMongoId().withMessage('Invalid ID formate'),
-  check('currentPassword').notEmpty().withMessage('currentPassword required'),
-  check('passwordConfirm').notEmpty().withMessage('passwordConfirm required'),
-  check('password')
+  check("id").isMongoId().withMessage("Invalid ID formate"),
+  check("currentPassword").notEmpty().withMessage("currentPassword required"),
+  check("passwordConfirm").notEmpty().withMessage("passwordConfirm required"),
+  check("password")
     .notEmpty()
-    .withMessage('Password Required')
+    .withMessage("Password Required")
     .custom(async (val, { req }) => {
       // 1- Verify current password
       const user = await User.findById(req.params.id);
