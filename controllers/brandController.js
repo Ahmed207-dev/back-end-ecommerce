@@ -5,6 +5,7 @@ const asyncHandler = require("express-async-handler");
 const factory = require("./handlersFactory");
 const { uploadSingleImage } = require("../middlewares/imageUpload");
 const Brand = require("../models/brandModel");
+const uploadToCloudinary = require("../utils/uploadToCloudinary");
 
 exports.uploadBrandImage = uploadSingleImage("image");
 
@@ -12,17 +13,25 @@ exports.uploadBrandImage = uploadSingleImage("image");
 exports.resizeImage = asyncHandler(async (req, res, next) => {
   if (!req.file) return next();
 
-  // req.file.filename = `category-${uuidv4()}-${Date.now()}.jpeg`;
-  const ext = req.file.mimetype.split("/")[1];
-  const filename = `brand-${uuidv4()}-${Date.now()}.${ext}`;
+  const buffer = await sharp(req.file.buffer)
+    .resize(500, 500, {
+      fit: "inside",
+      withoutEnlargement: true,
+    })
+    .jpeg({ quality: 90 })
+    .toBuffer();
 
-  await sharp(req.file.buffer)
-    // .resize(500, 500)
-    // .toFormat('jpeg')
-    // .jpeg({ quality: 90 })
-    .toFile(`uploads/brands/${filename}`); // write into a file on the disk
-  console.log(filename);
-  req.body.image = filename;
+  const result = await uploadToCloudinary(buffer, {
+    folder: "brands",
+    public_id: `brand-${uuidv4()}-${Date.now()}`,
+  });
+
+  // Cloudinary URL
+  req.body.image = result.secure_url;
+
+  // Useful if you want to delete/replace the image later
+  req.body.image_public_id = result.public_id;
+
   next();
 });
 

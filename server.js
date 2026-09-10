@@ -1,8 +1,7 @@
-const path = require("path");
 const express = require("express");
 const dotenv = require("dotenv");
 
-dotenv.config({ path: ".env" });
+dotenv.config();
 const morgan = require("morgan");
 require("colors");
 const compression = require("compression");
@@ -48,7 +47,6 @@ app.options("*", cors());
 
 // Parse URL-encoded bodies
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
-app.use(express.static(path.join(__dirname, "uploads")));
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
@@ -56,6 +54,12 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // Mount routers
+app.get("/", (req, res) => {
+  res.json({
+    health: "good",
+  });
+});
+
 app.use("/api/v1/categories", categoryRouter);
 app.use("/api/v1/subcategories", subCategoryRouter);
 app.use("/api/v1/brands", brandRouter);

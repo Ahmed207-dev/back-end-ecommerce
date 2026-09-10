@@ -5,51 +5,32 @@ const asyncHandler = require("express-async-handler");
 const factory = require("./handlersFactory");
 const { uploadSingleImage } = require("../middlewares/imageUpload");
 const Category = require("../models/categoryModel");
+const uploadToCloudinary = require("../utils/uploadToCloudinary");
 
-// 1- Use diskStorage Engine (configure destination & image name)
-// const multerStorage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, 'uploads/categories');
-//   },
-//   filename: function (req, file, cb) {
-//     const ext = file.mimetype.split('/')[1];
-//     const filename = `category-${uuidv4()}-${Date.now()}.${ext}`;
-//     cb(null, `${filename}`);
-//   },
-// });
-
-// 2- Use a memory storage to store files on a memory as a buffer to make image processing
-// const multerStorage = multer.memoryStorage();
-
-// Accept only images
-// const multerFilter = (req, file, cb) => {
-//   if (!req.body.name) {
-//     cb(new ApiError('Category name required', 400), false);
-//   } else if (file.mimetype.startsWith('image')) {
-//     cb(null, true);
-//   } else {
-//     cb(new ApiError('only images allowed', 400), false);
-//   }
-// };
-
-// const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
-
-// exports.uploadCategoryImage = upload.single('image');
 exports.uploadCategoryImage = uploadSingleImage("image");
 
 // Resize image
 exports.resizeImage = asyncHandler(async (req, res, next) => {
   if (!req.file) return next();
 
-  // req.file.filename = `category-${uuidv4()}-${Date.now()}.jpeg`;
-  const ext = req.file.mimetype.split("/")[1];
-  const filename = `category-${uuidv4()}-${Date.now()}.${ext}`;
+  const buffer = await sharp(req.file.buffer)
+    .resize(500, 500)
+    .jpeg({ quality: 90 })
+    .toBuffer();
 
-  await sharp(req.file.buffer)
-    // .resize(500, 500)
-    .toFile(`uploads/categories/${filename}`); // write into a file on the disk
+  const result = await uploadToCloudinary(buffer, {
+    folder: "categories",
+    public_id: `category-${uuidv4()}-${Date.now()}`,
+  });
 
-  req.body.image = filename;
+  req.body.image = result.secure_url;
+
+  // Keep this if you need to delete/replace the image later
+  req.file.cloudinary = {
+    url: result.secure_url,
+    publicId: result.public_id,
+  };
+
   next();
 });
 

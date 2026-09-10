@@ -7,6 +7,7 @@ const multer = require("multer");
 const ApiError = require("../utils/apiError");
 const Product = require("../models/productModel");
 const factory = require("./handlersFactory");
+const uploadToCloudinary = require("../utils/uploadToCloudinary");
 
 // Storage
 const multerStorage = multer.memoryStorage();
@@ -28,40 +29,53 @@ exports.uploadProductImages = upload.fields([
 ]);
 
 exports.resizeProductImages = asyncHandler(async (req, res, next) => {
-  // console.log(req.files);
-  // 1) Image Process for imageCover
-  if (req.files.imageCover) {
-    const ext = req.files.imageCover[0].mimetype.split("/")[1];
-    const imageCoverFilename = `products-${uuidv4()}-${Date.now()}-cover.${ext}`;
-    await sharp(req.files.imageCover[0].buffer)
+  // 1. Process imageCover
+  if (req && req.files && req.files.imageCover && req.files.imageCover.length) {
+    const imageCover = req.files.imageCover[0];
+
+    const buffer = await sharp(imageCover.buffer)
       // .resize(2000, 1333)
-      // .toFormat('jpeg')
-      // .jpeg({ quality: 90 })
-      .toFile(`uploads/products/${imageCoverFilename}`); // write into a file on the disk
+      .jpeg({ quality: 90 })
+      .toBuffer();
 
-    // Save imageCover into database
-    req.body.imageCover = imageCoverFilename;
+    const result = await uploadToCloudinary(buffer, {
+      folder: "products",
+
+      public_id: `product-${uuidv4()}-${Date.now()}-cover`,
+    });
+
+    req.body.imageCover = result.secure_url;
+    req.body.imageCoverPublicId = result.public_id;
   }
-  req.body.images = [];
-  // 2- Image processing for images
-  if (req.files.images) {
-    await Promise.all(
-      req.files.images.map(async (img, index) => {
-        const ext = img.mimetype.split("/")[1];
-        const filename = `products-${uuidv4()}-${Date.now()}-${
-          index + 1
-        }.${ext}`;
-        await sharp(img.buffer)
-          // .resize(800, 800)
-          // .toFormat('jpeg')
-          // .jpeg({ quality: 90 })
-          .toFile(`uploads/products/${filename}`);
 
-        // Save images into database
-        req.body.images.push(filename);
+  // 2. Process product images
+  req.body.images = [];
+  req.body.imagePublicIds = [];
+
+  if (req && req.files && req.files.images && req.files.images.length) {
+    const uploadedImages = await Promise.all(
+      req.files.images.map(async (img, index) => {
+        const buffer = await sharp(img.buffer)
+          // .resize(800, 800)
+          .jpeg({ quality: 90 })
+          .toBuffer();
+
+        const result = await uploadToCloudinary(buffer, {
+          folder: "products",
+          public_id: `product-${uuidv4()}-${Date.now()}-${index + 1}`,
+        });
+
+        return {
+          url: result.secure_url,
+          publicId: result.public_id,
+        };
       })
     );
+
+    req.body.images = uploadedImages.map((image) => image.url);
+    req.body.imagePublicIds = uploadedImages.map((image) => image.publicId);
   }
+
   next();
 });
 

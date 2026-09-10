@@ -30,21 +30,6 @@ more resources. this size of Indexes is bigger than the size of collection itsel
 // (Compound Field Index) => multi Index
 categorySchema.index({ name: 1 });
 
-const setImageUrl = (doc) => {
-  if (doc.image) {
-    const imageUrl = `${process.env.BASE_URL}/categories/${doc.image}`;
-    doc.image = imageUrl;
-  }
-};
-
-categorySchema.post("init", (doc) => {
-  setImageUrl(doc);
-});
-
-categorySchema.post("save", (doc) => {
-  setImageUrl(doc);
-});
-
 const Category = mongoose.model("Category", categorySchema);
 
 module.exports = Category;
