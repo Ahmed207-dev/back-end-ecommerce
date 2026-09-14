@@ -434,13 +434,9 @@ const insertData = async () => {
       category: category._id,
     }));
 
-    brandDataArray.map((i) => (
-      Brand.create(i)
-     ));
+    brandDataArray.map((i) => Brand.create(i));
 
-     categoryDataArray.map((i) => (
-      Category.create(i)
-     ));
+    categoryDataArray.map((i) => Category.create(i));
 
     // Create products
     await Product.create(products);

@@ -31,18 +31,6 @@ const app = express();
 
 //
 const couponRouter = require("./routes/couponRoute");
-const sendEmail = require("./utils/sendEmail");
-
-try {
-  sendEmail({
-    email: 'amrelramady20@gmail.com',
-    subject: "Your Password Reset Code (valid for 10 min)",
-    message: 'Test',
-  });
-} catch (e){
-  console.log(e)
-}
-
 
 app.use(express.json());
 
