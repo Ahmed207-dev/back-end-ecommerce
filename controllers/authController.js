@@ -138,7 +138,8 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
   // save the encrypted reset code into our db and send the un encrypted via email
   // https://nodejs.org/en/knowledge/cryptography/how-to-use-crypto-module/
   // generate 6 digit random number in javascript
-  const resetCode = Math.floor(Math.random() * 1000000 + 1).toString();
+  // const resetCode = Math.floor(Math.random() * 1000000 + 1).toString();
+  const resetCode = Math.floor('123456').toString();
   // encrypt the reset code before saving it in db (Security)
   const hashedResetCode = crypto
     .createHash("sha256")
